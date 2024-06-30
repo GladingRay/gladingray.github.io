@@ -19,30 +19,32 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"gladingray.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Problemhttps:&#x2F;&#x2F;leetcode.cn&#x2F;problems&#x2F;swap-nodes-in-pairs&#x2F;description&#x2F;?envType&#x3D;study-plan-v2&amp;envId&#x3D;top-100-liked">
+    <meta name="description" content="总结一些AI编译相关的知识内容包括我对TVM, ansor, MLIR的一些学习与浅显理解">
 <meta property="og:type" content="article">
-<meta property="og:title" content="LeetCode Hot100 NO.24">
-<meta property="og:url" content="https://gladingray.github.io/2024/06/16/LeetCode-Hot100-NO-24/index.html">
+<meta property="og:title" content="[WIP]AI编译技术调研">
+<meta property="og:url" content="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/index.html">
 <meta property="og:site_name" content="GladingRay">
-<meta property="og:description" content="Problemhttps:&#x2F;&#x2F;leetcode.cn&#x2F;problems&#x2F;swap-nodes-in-pairs&#x2F;description&#x2F;?envType&#x3D;study-plan-v2&amp;envId&#x3D;top-100-liked">
+<meta property="og:description" content="总结一些AI编译相关的知识内容包括我对TVM, ansor, MLIR的一些学习与浅显理解">
 <meta property="og:locale">
-<meta property="article:published_time" content="2024-06-16T09:06:55.000Z">
-<meta property="article:modified_time" content="2024-06-21T14:57:58.923Z">
+<meta property="article:published_time" content="2024-06-22T12:50:50.000Z">
+<meta property="article:modified_time" content="2024-06-30T11:58:28.099Z">
 <meta property="article:author" content="GladingRay">
-<meta property="article:tag" content="leetcode">
-<meta property="article:tag" content="linklist">
-<meta property="article:tag" content="mid">
+<meta property="article:tag" content="paper">
+<meta property="article:tag" content="hpc">
+<meta property="article:tag" content="TVM">
+<meta property="article:tag" content="MLIR">
+<meta property="article:tag" content="codegen">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://gladingray.github.io/2024/06/16/LeetCode-Hot100-NO-24/">
+<link rel="canonical" href="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"chinglish","comments":true,"permalink":"https://gladingray.github.io/2024/06/16/LeetCode-Hot100-NO-24/","path":"2024/06/16/LeetCode-Hot100-NO-24/","title":"LeetCode Hot100 NO.24"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"chinglish","comments":true,"permalink":"https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/","path":"2024/06/22/AI编译技术调研/","title":"[WIP]AI编译技术调研"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>LeetCode Hot100 NO.24 | GladingRay</title>
+<title>[WIP]AI编译技术调研 | GladingRay</title>
   
 
 
@@ -115,7 +117,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Problem"><span class="nav-number">1.</span> <span class="nav-text">Problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Solution"><span class="nav-number">2.</span> <span class="nav-text">Solution</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%E4%B8%80%E4%BA%9BAI%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3%E7%9A%84%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">总结一些AI编译相关的知识</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TVM-2018"><span class="nav-number">2.</span> <span class="nav-text">TVM-2018</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E5%9B%BE%E7%BA%A7%E4%BC%98%E5%8C%96"><span class="nav-number">2.1.</span> <span class="nav-text">计算图级优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E5%AD%90%E8%9E%8D%E5%90%88"><span class="nav-number">2.1.1.</span> <span class="nav-text">算子融合</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E5%AD%90%E7%BA%A7%E4%BC%98%E5%8C%96%E4%B8%8E%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="nav-number">2.2.</span> <span class="nav-text">算子级优化与代码生成</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ansor"><span class="nav-number">3.</span> <span class="nav-text">Ansor</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MLIR"><span class="nav-number">4.</span> <span class="nav-text">MLIR</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -181,7 +183,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="chinglish">
-    <link itemprop="mainEntityOfPage" href="https://gladingray.github.io/2024/06/16/LeetCode-Hot100-NO-24/">
+    <link itemprop="mainEntityOfPage" href="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -194,12 +196,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="LeetCode Hot100 NO.24 | GladingRay">
+      <meta itemprop="name" content="[WIP]AI编译技术调研 | GladingRay">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          LeetCode Hot100 NO.24
+          [WIP]AI编译技术调研
         </h1>
 
         <div class="post-meta-container">
@@ -210,14 +212,14 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-06-16 17:06:55" itemprop="dateCreated datePublished" datetime="2024-06-16T17:06:55+08:00">2024-06-16</time>
+      <time title="Created: 2024-06-22 20:50:50" itemprop="dateCreated datePublished" datetime="2024-06-22T20:50:50+08:00">2024-06-22</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-06-21 22:57:58" itemprop="dateModified" datetime="2024-06-21T22:57:58+08:00">2024-06-21</time>
+      <time title="Modified: 2024-06-30 19:58:28" itemprop="dateModified" datetime="2024-06-30T19:58:28+08:00">2024-06-30</time>
     </span>
 
   
@@ -229,10 +231,21 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/swap-nodes-in-pairs/description/?envType=study-plan-v2&envId=top-100-liked">https://leetcode.cn/problems/swap-nodes-in-pairs/description/?envType=study-plan-v2&amp;envId=top-100-liked</a></p>
+    <div class="post-body" itemprop="articleBody"><h1 id="总结一些AI编译相关的知识"><a href="#总结一些AI编译相关的知识" class="headerlink" title="总结一些AI编译相关的知识"></a>总结一些AI编译相关的知识</h1><p>内容包括我对TVM, ansor, MLIR的一些学习与浅显理解</p>
 <span id="more"></span>
-<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><p>两两交换链表中的节点<br>pre-&gt;p1-&gt;p2-&gt;p3 &#x3D;&gt; pre-&gt;p2-&gt;p1-&gt;p3<br>设置一个dummy节点避免对头节点的特殊处理，遍历整个链表完成上面的操作，遍历过程要保证p1p2非空<br>可以只记录p2</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"> * struct ListNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     ListNode *next;</span></span><br><span class="line"><span class="comment"> *     ListNode() : val(0), next(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     ListNode(int x) : val(x), next(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     ListNode(int x, ListNode *next) : val(x), next(next) &#123;&#125;</span></span><br><span class="line"><span class="comment"> * &#125;;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">ListNode* <span class="title">swapPairs</span><span class="params">(ListNode* head)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="function">ListNode <span class="title">dummy</span><span class="params">(<span class="number">0</span>, head)</span></span>;</span><br><span class="line"></span><br><span class="line">        ListNode *pre = &amp;dummy;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (pre-&gt;next &amp;&amp; pre-&gt;next-&gt;next)</span><br><span class="line">        &#123;</span><br><span class="line">            ListNode *p2 = pre-&gt;next-&gt;next;</span><br><span class="line">            pre-&gt;next-&gt;next = p2-&gt;next;</span><br><span class="line">            p2-&gt;next = pre-&gt;next;</span><br><span class="line">            pre-&gt;next = p2;</span><br><span class="line"></span><br><span class="line">            pre = pre-&gt;next-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> dummy.next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h1 id="TVM-2018"><a href="#TVM-2018" class="headerlink" title="TVM-2018"></a>TVM-2018</h1><p>TVM，一个端到端的深度学习编译器，从onnx或者pytorch等格式的模型，经过计算图级优化和算子级优化后，生成可部署到各个硬件平台上的二进制程序  </p>
+<h2 id="计算图级优化"><a href="#计算图级优化" class="headerlink" title="计算图级优化"></a>计算图级优化</h2><p>传说中的编译模型，通过常量折叠、算子融合操作优化计算图在执行时的耗时，除此之外还可以提前relayout一些数据，使其在执行时对硬件访存&#x2F;计算特性更加友好  </p>
+<h3 id="算子融合"><a href="#算子融合" class="headerlink" title="算子融合"></a>算子融合</h3><p>论文中将算子分成了四种1. 一对一映射，2. 规约，3. 复杂的，但是输出可以融合，4. 不能融合的。<br>作者提前定义了一些融合规则来进行算子融合。算子融合的好处，减少对中间结果的重复访问&#x2F;冗余的写回与读取操作，对于GPU和NPU这种需要kernel launch的加速器来说，还可以降低kernel launch的开销  </p>
+<h2 id="算子级优化与代码生成"><a href="#算子级优化与代码生成" class="headerlink" title="算子级优化与代码生成"></a>算子级优化与代码生成</h2><p>TVM提供了tensor expression(te)和支持各种硬件的一系列调度原语(schedule primitives)，调度是在不改变原程序逻辑定义的前提下，在原程序基础上进行一系列的代码变换，比如tile，向量化（使用simd），张量化（使用类mma指令）等。<br>基础使用方法：使用te描述算子的计算定义，在此定义之上应用一系列的调度原语，<br>至于对某个算子应该使用哪些调度原语是需要程序员根据hpc的一些知识提前写好的，以模板的形式（topi）存在于tvm的代码中（在引入ansor，也就是autoschedule模块前是这样的），对外提供api。<br>关于调度原语的具体使用有两种方式，一种是写死，比如说，对于这个算子就该在这个循环进行一次tile，tilesize就该是128，就该这层循环上向量化，就该在另一层循环上并行化，不需要搜索的过程，可以直接build，还有一种是，我知道需要tile，但是在哪个维度tile是可调节的(knob)或者说是需要搜索的，tilesize也不是固定的，也是可调节的，这种情况下需要使用autotvm定义搜索空间，经过搜索后返回最优的函数。<br>下面这个链接里有具体使用例子，还带上了ansor(auto_schedule)</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/billmuch/matmul_perf_test/tree/main">https://github.com/billmuch/matmul_perf_test/tree/main</a>  </p>
+</blockquote>
+<p>如何使用te搭配写死的调度原语生成接近手写性能的GEMM论文：  </p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2310.20347">https://arxiv.org/pdf/2310.20347</a></p>
+</blockquote>
+<p>对于用来减少搜索耗时的ML-Based Cost Model就不深入了解了。Distributed Device Pool and RPC也掠过。</p>
+<h1 id="Ansor"><a href="#Ansor" class="headerlink" title="Ansor"></a>Ansor</h1><h1 id="MLIR"><a href="#MLIR" class="headerlink" title="MLIR"></a>MLIR</h1>
     </div>
 
     
@@ -241,22 +254,24 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/leetcode/" rel="tag"># leetcode</a>
-              <a href="/tags/linklist/" rel="tag"># linklist</a>
-              <a href="/tags/mid/" rel="tag"># mid</a>
+              <a href="/tags/paper/" rel="tag"># paper</a>
+              <a href="/tags/hpc/" rel="tag"># hpc</a>
+              <a href="/tags/TVM/" rel="tag"># TVM</a>
+              <a href="/tags/MLIR/" rel="tag"># MLIR</a>
+              <a href="/tags/codegen/" rel="tag"># codegen</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2024/06/16/HelloHexo/" rel="prev" title="HelloHexo">
-                  <i class="fa fa-angle-left"></i> HelloHexo
+                <a href="/2024/06/19/LeetCode-hot100-LinkList/" rel="prev" title="LeetCode Hot100 LinkList">
+                  <i class="fa fa-angle-left"></i> LeetCode Hot100 LinkList
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/06/17/%E8%AE%BA%E6%96%87%E5%AD%A6%E4%B9%A0-%E4%BD%BF%E7%94%A8Exo%E7%94%9F%E6%88%90Arm%E4%B8%8A%E7%9A%84%E9%AB%98%E6%80%A7%E8%83%BDmicrokernel/" rel="next" title="[论文学习]使用Exo生成Arm上的高性能microkernel">
-                  [论文学习]使用Exo生成Arm上的高性能microkernel <i class="fa fa-angle-right"></i>
+                <a href="/2024/06/25/LeetCode-Hot100-binary-tree/" rel="next" title="LeetCode Hot100 Tree">
+                  LeetCode Hot100 Tree <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
