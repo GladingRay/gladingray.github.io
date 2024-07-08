@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/gen_flow.png">
 <meta property="og:image" content="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/sketch1.png">
 <meta property="article:published_time" content="2024-06-22T12:50:50.000Z">
-<meta property="article:modified_time" content="2024-07-08T15:04:46.448Z">
+<meta property="article:modified_time" content="2024-07-08T15:08:36.588Z">
 <meta property="article:author" content="GladingRay">
 <meta property="article:tag" content="paper">
 <meta property="article:tag" content="hpc">
@@ -224,7 +224,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-07-08 23:04:46" itemprop="dateModified" datetime="2024-07-08T23:04:46+08:00">2024-07-08</time>
+      <time title="Modified: 2024-07-08 23:08:36" itemprop="dateModified" datetime="2024-07-08T23:08:36+08:00">2024-07-08</time>
     </span>
 
   
@@ -270,15 +270,16 @@
 <li>Multi-level Tiling，如果当前节点有数据重用，就对代码做多级tile的变换，论文里将张量计算的维度分成了两类，一类是空间维度S，一类是规约维度R，CPU上使用固定的SSRSRS的结构，以矩阵乘法为例，这个变换会将原始的3重循环tile成10重循环，作者认为这个tile结构对计算密集型算子（matmul，conv）够用了。虽然可以将某层循环的长度设为1消除循环来实现改变tile结构循环顺序的目的，但是还是有一定局限性的，假如10重循环的长度都不为1，就不能交换循环顺序，是一个固定的tile结构。</li>
 <li>Multi-level Tiling with Fusion，如果当前节点有数据重用且有一个可融合的消费节点，就对当前节点做多级tile的变换并将后继结点融合进tile结构里。</li>
 <li>Add Cache Stage，如果当前节点有数据重用且没有可融合的消费节点，就对当前节点做多级tile的变换，并将输出写到一个Cache Block里，而不是直接写回内存。</li>
-<li>Reduction Factorization，如果当前节点在规约的维度上有更多并行的机会，就使用rfactor将规约维度分解到空间维度去并行（暂时没仔细了解，可能是和splitK类似的操作？）。<br>上面这些规则的条件是否满足是通过分析子图计算定义中张量的读写模式得出的，论文里没有展开，可能和编译里数据流分析类似？</li>
+<li>Reduction Factorization，如果当前节点在规约的维度上有更多并行的机会，就使用rfactor将规约维度分解到空间维度去并行（暂时没仔细了解，可能是和splitK类似的操作？）。</li>
 </ol>
+<p>上面这些规则的条件是否满足是通过分析子图计算定义中张量的读写模式得出的，论文里没有展开，可能和编译里数据流分析类似？</p>
 <p>举一个例子：矩阵乘法后跟一个Relu激活函数，拓扑排序后是（A，B，C，D）</p>
 <p><img src="/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/gemm+relu.png"></p>
 <p>经过如下流程（所以inline到底是个什么操作，这里将relu判定为不可inline的，直接跳过了）：</p>
 <p><img src="/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/gen_flow.png"></p>
 <p>得到如下sketch：</p>
 <p><img src="/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/sketch1.png"></p>
-<p>对于GPU，ansor将多级tile结构设定为SSSRRSRS。最外面三层空间维度一次被绑定到线程块（BlockIdx），线程束（Warp，论文里叫虚拟线程），线程（threadIdx）上。除此之外还增加了利用shared memory的规则和跨线程规约的规则。</p>
+<p>对于GPU，ansor将多级tile结构设定为SSSRRSRS。最外面三层空间维度依次被绑定到线程块（BlockIdx），线程束（Warp，论文里叫虚拟线程），线程（threadIdx）上。除此之外还增加了利用shared memory的规则和跨线程规约的规则。</p>
 <h3 id="低级annotation"><a href="#低级annotation" class="headerlink" title="低级annotation"></a>低级annotation</h3><p>sketch只确定了高级tile结构，是不完整的程序，还需要确定在哪层循环并行、向量化，循环展开次数，tilesize等细节才行。ansor随机设定这些细节然后进化搜索，搜出最好的组合。</p>
 <h2 id="评估结果"><a href="#评估结果" class="headerlink" title="评估结果"></a>评估结果</h2><p>论文在三个层面评估了程序的性能：单算子，子图，整个神经网络模型。作者的结论是，截止到他做实验，ansor的效果在各个平台上好于pytorch（后端使用厂商提供的加速库），halide，autotvm，flextensor。</p>
 <h1 id="MLIR"><a href="#MLIR" class="headerlink" title="MLIR"></a>MLIR</h1>
