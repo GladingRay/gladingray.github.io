@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/gen_flow.png">
 <meta property="og:image" content="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/sketch1.png">
 <meta property="article:published_time" content="2024-06-22T12:50:50.000Z">
-<meta property="article:modified_time" content="2024-07-08T14:58:33.518Z">
+<meta property="article:modified_time" content="2024-07-08T15:04:46.448Z">
 <meta property="article:author" content="GladingRay">
 <meta property="article:tag" content="paper">
 <meta property="article:tag" content="hpc">
@@ -224,7 +224,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-07-08 22:58:33" itemprop="dateModified" datetime="2024-07-08T22:58:33+08:00">2024-07-08</time>
+      <time title="Modified: 2024-07-08 23:04:46" itemprop="dateModified" datetime="2024-07-08T23:04:46+08:00">2024-07-08</time>
     </span>
 
   
@@ -255,8 +255,9 @@
 <li>提出了一种针对计算图生成巨大启发式张量程序搜索空间的方法。</li>
 <li>使用基于cost model的计划搜索策略精细调优张量程序。</li>
 <li>提出一种基于梯度下降的调度算法，智能的给整个DNN的多个子图做一个优先级排序，分配相应的搜索时间片。</li>
-<li>对Ansor系统做了全面的评估，上面提到的技术使Ansor效果拔群。<br>2的主要目的是为了在尽量不错过最优实现的前提下减少搜索耗时，3的目的是为了在可接受搜索耗时一定的情况下，将更多搜索耗时花在比较重要的子图上。4没啥好说的就是做了一些测试展示优越性。所以下面将主要关注ansor是怎么自动生成搜索空间，并生成完整程序的。</li>
+<li>对Ansor系统做了全面的评估，上面提到的技术使Ansor效果拔群。</li>
 </ol>
+<p>2的主要目的是为了在尽量不错过最优实现的前提下减少搜索耗时，3的目的是为了在可接受搜索耗时一定的情况下，将更多搜索耗时花在比较重要的子图上。4没啥好说的就是做了一些测试展示优越性。所以下面将主要关注ansor是怎么自动生成搜索空间，并生成完整程序的。</p>
 <p><img src="/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/ansor_overview.png"></p>
 <h2 id="现有张量编译器在搜索空间定义上的缺点"><a href="#现有张量编译器在搜索空间定义上的缺点" class="headerlink" title="现有张量编译器在搜索空间定义上的缺点"></a>现有张量编译器在搜索空间定义上的缺点</h2><p>一类是以TVM为代表的基于手写模板定义搜索空间，缺点是手写很难枚举所有可搜索情况，导致搜索空间不够大，不能包含最优实现，而且手写模板需要大量的手工工作，不同的算子在不同的硬件上需要不同的模板。还有一类是基于顺序结构的搜索，一步一步的构造完整的程序，编译器依赖构造过程中不完整的程序来决定下一步应该怎么变换。缺点是剪枝策略较为激进，可能把最优实现剪掉了，而且依赖不完整程序做出的决策并不可靠。</p>
 <h2 id="Ansor的分层方法"><a href="#Ansor的分层方法" class="headerlink" title="Ansor的分层方法"></a>Ansor的分层方法</h2><p>Ansor将搜索空间分成了高级结构(sketch)和低级细节(annotation, e.g. tile size, parallel, unroll annotations)。Ansor为计算图自动的构造搜索空间，省去了手写模板的工作。一个完整的程序需要先枚举可能的高级sketch，然后针对sketch确定annotations。</p>
