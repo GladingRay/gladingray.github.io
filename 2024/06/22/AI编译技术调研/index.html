@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/MLIR-GEMM-native.png">
 <meta property="og:image" content="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/MLIR-gemm-tiledv1.png">
 <meta property="article:published_time" content="2024-06-22T12:50:50.000Z">
-<meta property="article:modified_time" content="2024-07-14T12:30:40.542Z">
+<meta property="article:modified_time" content="2024-07-14T14:06:51.047Z">
 <meta property="article:author" content="GladingRay">
 <meta property="article:tag" content="paper">
 <meta property="article:tag" content="hpc">
@@ -226,7 +226,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-07-14 20:30:40" itemprop="dateModified" datetime="2024-07-14T20:30:40+08:00">2024-07-14</time>
+      <time title="Modified: 2024-07-14 22:06:51" itemprop="dateModified" datetime="2024-07-14T22:06:51+08:00">2024-07-14</time>
     </span>
 
   
@@ -325,9 +325,9 @@
 </ul>
 <h3 id="Consequences-of-the-MLIR-Design"><a href="#Consequences-of-the-MLIR-Design" class="headerlink" title="Consequences of the MLIR Design"></a>Consequences of the MLIR Design</h3><p>_ (:3 」∠)_</p>
 <h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>论文最后认为MLIR在ML和HPC领域都大有可为。MLIR官网还有很多很好的文档和教程，有缘再见吧，我只是想水一个矩阵乘法代码生成器。。。。</p>
-<h2 id="如何使用MLIR生成一个单线程高性能矩阵乘法"><a href="#如何使用MLIR生成一个单线程高性能矩阵乘法" class="headerlink" title="如何使用MLIR生成一个单线程高性能矩阵乘法"></a>如何使用MLIR生成一个单线程高性能矩阵乘法</h2><p>文章链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2003.00532%EF%BC%8C%E4%BD%9C%E8%80%85%E6%98%AFUday%EF%BC%8CPLUTO%E4%BD%9C%E8%80%85">https://arxiv.org/abs/2003.00532，作者是Uday，PLUTO作者</a><br>文章以使用MLIR生成高性能矩阵乘法为例，讲述了MLIR生成的高性能程序和手写代码有一定竞争力。<br>作者认为，通过将程序在IR级别自动分析、自动应用一些变换可以避免手写高性能代码。<br>这篇文章的内容是面向编译器，使用MLIR应用手写库中使用到的HPC技术。</p>
+<h2 id="如何使用MLIR生成一个单线程高性能矩阵乘法"><a href="#如何使用MLIR生成一个单线程高性能矩阵乘法" class="headerlink" title="如何使用MLIR生成一个单线程高性能矩阵乘法"></a>如何使用MLIR生成一个单线程高性能矩阵乘法</h2><p>文章链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2003.00532">https://arxiv.org/abs/2003.00532</a><br>作者是Uday，PLUTO作者<br>文章以使用MLIR生成高性能矩阵乘法为例，讲述了MLIR生成的高性能程序和手写代码有一定竞争力。<br>作者认为，通过将程序在IR级别自动分析、自动应用一些变换可以避免手写高性能代码。<br>这篇文章的内容是面向编译器，使用MLIR应用手写库中使用到的HPC技术。</p>
 <h3 id="环境介绍"><a href="#环境介绍" class="headerlink" title="环境介绍"></a>环境介绍</h3><p>单核理论峰值75.2GFLOPS(超频至4.7GHz)的Intel Core i7-8700K，私有L1dcache 32KiB，私有L2 cache 256KiB，共享L3 cache 12MiB。</p>
-<h3 id="baseline"><a href="#baseline" class="headerlink" title="baseline"></a>baseline</h3><p>2088x2048x2088 的dgemm</p>
+<h3 id="baseline"><a href="#baseline" class="headerlink" title="baseline"></a>baseline</h3><p>2088x2048x2048 的dgemm</p>
 <table>
 <thead>
 <tr>
@@ -373,7 +373,7 @@
 <p>作者为了只评估tile后对cache访问的优化，所以暂时忽略了寄存器级的分块</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hop.matmul %A, %B, %C &#123;</span><br><span class="line"> schedule = (d0, d1, d2)-&gt; (d2 floordiv <span class="number">256</span>, d0 floordiv <span class="number">64</span>, d1, d0, d2)</span><br><span class="line"> &#125; : (memref&lt;<span class="number">2088</span>x2048xf64&gt;, memref&lt;<span class="number">2048</span>x2048xf64&gt;, memref&lt;<span class="number">2088</span>x2048xf64&gt;)</span><br></pre></td></tr></table></figure>
 <p>生成的可视化MLIR如下：<br><img src="/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/MLIR-gemm-tiledv1.png"><br>性能只有1.6012GFLOPS。<br>MLIR中提供-affine-data-copy-generate pass和mlir::affineDataCopyGenerate工具，自动生成将张量显式copy&#x2F;pack的代码，可以直接用。作者这里选择新增使用mlir::affineDataCopyGenerate工具的pass -hopt-copy，后续还有循环展开，标量代替，向量化步骤，通过-hopt*系列选项来启用pass，这些pass好像都是作者另写的？最终在下面这条命令下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mlir-opt-hopt-hopt-vect-hopt-copy-hopt-unroll-hopt-scalrep-convert-linalg-to-loops-lower-affine-convert-std-to-llvm dgemm.mlir | mlir-cpu-runner-O3-e main-reps=5-entry-point-result=void-shared-libs=lib/libmlir_runner_utils.so</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mlir-opt -hopt -hopt-vect -hopt-copy -hopt-unroll -hopt-scalrep -convert-linalg-to-loops -lower-affine -convert-std-to-llvm  dgemm.mlir | mlir-cpu-runner-O3 -e main -reps=5 -entry-point-result=void -shared-libs=lib/libmlir_runner_utils.so</span><br></pre></td></tr></table></figure>
 <p>生成了最终版的MLIR（太长不贴），并达到了49.8336 GFLOPS的性能。调优分块参数之后，性能可达61.939GFLOPS。通过-hopt-blis pass将最里面三重循环替换成blis的手写6x8 kernel后，性能也只有61.421GFLOPS。<br>总之，有了MLIR之后，手写的各种优化技术都可以变成在IR上操作的一些pass，pass是可以重用的。pass写好之后，对于矩阵乘法来说，只需要给op传不同参数即可生成有上述所有优化技术的代码，例如下面这个可以直接生成高性能sgemm，128.89GFLOPS，最快的MKL也才130.92GFLOPS。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hop.matmul %A, %B, %C &#123;</span><br><span class="line"> M_C = <span class="number">348</span> : i32, K_C = <span class="number">512</span> : i32, M_R = <span class="number">3</span>, N_R = <span class="number">32</span> : i32, K_U = <span class="number">4</span> : i32</span><br><span class="line"> &#125; : (memref&lt;<span class="number">2088</span>x2048xf32&gt;, memref&lt;<span class="number">2048</span>x2048xf32&gt;, memref&lt;<span class="number">2088</span>x2048xf32&gt;)</span><br></pre></td></tr></table></figure>
 
