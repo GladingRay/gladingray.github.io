@@ -30,8 +30,10 @@
 <meta property="og:image" content="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/gemm+relu.png">
 <meta property="og:image" content="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/gen_flow.png">
 <meta property="og:image" content="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/sketch1.png">
+<meta property="og:image" content="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/MLIR-GEMM-native.png">
+<meta property="og:image" content="https://gladingray.github.io/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/MLIR-gemm-tiledv1.png">
 <meta property="article:published_time" content="2024-06-22T12:50:50.000Z">
-<meta property="article:modified_time" content="2024-07-08T15:08:36.588Z">
+<meta property="article:modified_time" content="2024-07-14T12:30:40.542Z">
 <meta property="article:author" content="GladingRay">
 <meta property="article:tag" content="paper">
 <meta property="article:tag" content="hpc">
@@ -122,7 +124,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%E4%B8%80%E4%BA%9BAI%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3%E7%9A%84%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">总结一些AI编译相关的知识</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TVM-2018"><span class="nav-number">2.</span> <span class="nav-text">TVM-2018</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E5%9B%BE%E7%BA%A7%E4%BC%98%E5%8C%96"><span class="nav-number">2.1.</span> <span class="nav-text">计算图级优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E5%AD%90%E8%9E%8D%E5%90%88"><span class="nav-number">2.1.1.</span> <span class="nav-text">算子融合</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E5%AD%90%E7%BA%A7%E4%BC%98%E5%8C%96%E4%B8%8E%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="nav-number">2.2.</span> <span class="nav-text">算子级优化与代码生成</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ansor"><span class="nav-number">3.</span> <span class="nav-text">Ansor</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%B0%E6%9C%89%E5%BC%A0%E9%87%8F%E7%BC%96%E8%AF%91%E5%99%A8%E5%9C%A8%E6%90%9C%E7%B4%A2%E7%A9%BA%E9%97%B4%E5%AE%9A%E4%B9%89%E4%B8%8A%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">3.1.</span> <span class="nav-text">现有张量编译器在搜索空间定义上的缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ansor%E7%9A%84%E5%88%86%E5%B1%82%E6%96%B9%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">Ansor的分层方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Sketch%E7%9A%84%E7%94%9F%E6%88%90"><span class="nav-number">3.2.1.</span> <span class="nav-text">Sketch的生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%8E%E7%BA%A7annotation"><span class="nav-number">3.2.2.</span> <span class="nav-text">低级annotation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E7%BB%93%E6%9E%9C"><span class="nav-number">3.3.</span> <span class="nav-text">评估结果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MLIR"><span class="nav-number">4.</span> <span class="nav-text">MLIR</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%E4%B8%80%E4%BA%9BAI%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3%E7%9A%84%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">总结一些AI编译相关的知识</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TVM-2018"><span class="nav-number">2.</span> <span class="nav-text">TVM-2018</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E5%9B%BE%E7%BA%A7%E4%BC%98%E5%8C%96"><span class="nav-number">2.1.</span> <span class="nav-text">计算图级优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E5%AD%90%E8%9E%8D%E5%90%88"><span class="nav-number">2.1.1.</span> <span class="nav-text">算子融合</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E5%AD%90%E7%BA%A7%E4%BC%98%E5%8C%96%E4%B8%8E%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="nav-number">2.2.</span> <span class="nav-text">算子级优化与代码生成</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ansor"><span class="nav-number">3.</span> <span class="nav-text">Ansor</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%B0%E6%9C%89%E5%BC%A0%E9%87%8F%E7%BC%96%E8%AF%91%E5%99%A8%E5%9C%A8%E6%90%9C%E7%B4%A2%E7%A9%BA%E9%97%B4%E5%AE%9A%E4%B9%89%E4%B8%8A%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">3.1.</span> <span class="nav-text">现有张量编译器在搜索空间定义上的缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ansor%E7%9A%84%E5%88%86%E5%B1%82%E6%96%B9%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">Ansor的分层方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Sketch%E7%9A%84%E7%94%9F%E6%88%90"><span class="nav-number">3.2.1.</span> <span class="nav-text">Sketch的生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%8E%E7%BA%A7annotation"><span class="nav-number">3.2.2.</span> <span class="nav-text">低级annotation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E7%BB%93%E6%9E%9C"><span class="nav-number">3.3.</span> <span class="nav-text">评估结果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MLIR"><span class="nav-number">4.</span> <span class="nav-text">MLIR</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%9F%C2%B7%E6%B5%85%E6%98%BE%E7%90%86%E8%A7%A3"><span class="nav-number">4.1.</span> <span class="nav-text">真·浅显理解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MLIR-%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="nav-number">4.1.1.</span> <span class="nav-text">MLIR 设计原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IR%E8%AE%BE%E8%AE%A1%E8%AF%A6%E6%83%85"><span class="nav-number">4.1.2.</span> <span class="nav-text">IR设计详情</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IR-infra"><span class="nav-number">4.1.3.</span> <span class="nav-text">IR infra</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MLIR%E7%9A%84%E4%B8%80%E4%BA%9B%E5%BA%94%E7%94%A8"><span class="nav-number">4.1.4.</span> <span class="nav-text">MLIR的一些应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Consequences-of-the-MLIR-Design"><span class="nav-number">4.1.5.</span> <span class="nav-text">Consequences of the MLIR Design</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%90%8E"><span class="nav-number">4.1.6.</span> <span class="nav-text">最后</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8MLIR%E7%94%9F%E6%88%90%E4%B8%80%E4%B8%AA%E5%8D%95%E7%BA%BF%E7%A8%8B%E9%AB%98%E6%80%A7%E8%83%BD%E7%9F%A9%E9%98%B5%E4%B9%98%E6%B3%95"><span class="nav-number">4.2.</span> <span class="nav-text">如何使用MLIR生成一个单线程高性能矩阵乘法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E4%BB%8B%E7%BB%8D"><span class="nav-number">4.2.1.</span> <span class="nav-text">环境介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#baseline"><span class="nav-number">4.2.2.</span> <span class="nav-text">baseline</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8MLIR%E4%BC%98%E5%8C%96GEMM"><span class="nav-number">4.2.3.</span> <span class="nav-text">使用MLIR优化GEMM</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -135,13 +137,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -224,7 +226,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-07-08 23:08:36" itemprop="dateModified" datetime="2024-07-08T23:08:36+08:00">2024-07-08</time>
+      <time title="Modified: 2024-07-14 20:30:40" itemprop="dateModified" datetime="2024-07-14T20:30:40+08:00">2024-07-14</time>
     </span>
 
   
@@ -253,7 +255,7 @@
 <h1 id="Ansor"><a href="#Ansor" class="headerlink" title="Ansor"></a>Ansor</h1><p>Ansor是一个针对深度学习程序的张量程序生成框架，使用从Relay中引入的算子融合算法将一个ONNX或其他格式的深度学习模型转换成多个子图，针对每一个子图自动生成搜索空间（TVM原有搜索空间是基于手写模板定义的），然后采样选择最优的程序。论文贡献：</p>
 <ol>
 <li>提出了一种针对计算图生成巨大启发式张量程序搜索空间的方法。</li>
-<li>使用基于cost model的计划搜索策略精细调优张量程序。</li>
+<li>使用基于cost model的进化搜索策略精细调优张量程序。</li>
 <li>提出一种基于梯度下降的调度算法，智能的给整个DNN的多个子图做一个优先级排序，分配相应的搜索时间片。</li>
 <li>对Ansor系统做了全面的评估，上面提到的技术使Ansor效果拔群。</li>
 </ol>
@@ -282,7 +284,99 @@
 <p>对于GPU，ansor将多级tile结构设定为SSSRRSRS。最外面三层空间维度依次被绑定到线程块（BlockIdx），线程束（Warp，论文里叫虚拟线程），线程（threadIdx）上。除此之外还增加了利用shared memory的规则和跨线程规约的规则。</p>
 <h3 id="低级annotation"><a href="#低级annotation" class="headerlink" title="低级annotation"></a>低级annotation</h3><p>sketch只确定了高级tile结构，是不完整的程序，还需要确定在哪层循环并行、向量化，循环展开次数，tilesize等细节才行。ansor随机设定这些细节然后进化搜索，搜出最好的组合。</p>
 <h2 id="评估结果"><a href="#评估结果" class="headerlink" title="评估结果"></a>评估结果</h2><p>论文在三个层面评估了程序的性能：单算子，子图，整个神经网络模型。作者的结论是，截止到他做实验，ansor的效果在各个平台上好于pytorch（后端使用厂商提供的加速库），halide，autotvm，flextensor。</p>
-<h1 id="MLIR"><a href="#MLIR" class="headerlink" title="MLIR"></a>MLIR</h1>
+<h1 id="MLIR"><a href="#MLIR" class="headerlink" title="MLIR"></a>MLIR</h1><p><a target="_blank" rel="noopener" href="https://mlir.llvm.org/">https://mlir.llvm.org/</a><br>还是让我们去A几道力扣吧家人们。</p>
+<h2 id="真·浅显理解"><a href="#真·浅显理解" class="headerlink" title="真·浅显理解"></a>真·浅显理解</h2><p>现有LLVM IR的描述能力有限，不能完美的表示各个高级语言的特性，导致大家都针对自己的特性搞了一套自己的IR，然后从这个IR lower到LLVM IR。MLIR的设计初衷是解决上述问题，提供一个通用的基础设施来减少工程量，使得不同硬件上的不同DSL编译器开发更加方便。<br>MLIR 使定义和引入新的抽象级别变得非常方便，并提供“开箱即用”的基础设施来解决常见的编译器工程问题。MLIR 通过 （1） 标准化基于静态单一分配 （SSA） 的 IR 数据结构，（2） 提供用于定义 IR 方言的声明性系统，以及 （3） 提供广泛的通用基础设施（包括文档、解析和打印逻辑、位置跟踪、多线程编译支持、传递管理等）来实现这一点。</p>
+<h3 id="MLIR-设计原则"><a href="#MLIR-设计原则" class="headerlink" title="MLIR 设计原则"></a>MLIR 设计原则</h3><ol>
+<li>极少的内置，高度的可定制化。系统提供了最少的通用的基础设施，大部分的IR都是用户可定制的。可以将计算图、AST、控制流图表达成IR。</li>
+<li>SSA和regions。使用SSA格式表示IR。现有IR使用扁平的线性的CFG，但为了表示更高级别的抽象，还需要嵌套区域（nested region）。这个更高级别的抽象加快了编译过程，有利于提取程序的SIMD并行性。为了支持异构编译，MLIR需要支持结构化控制流，并发结构，闭包等的表达。</li>
+<li>渐进的将程序从高级表示降级到低级表示。以前存在的编译器也有多级IR，但是层级是固定的。对程序（不管是AST还是数据流图&#x2F;控制流图）的遍历、分析与变换被称为pass。pass大概有4类，优化变换，赋能变换（enabling transformations），降级（lowering）（4）清理（cleanup）。</li>
+<li>维护高级语义。系统需要保留分析或优化性能所需的更高级别的语义和计算结构。例如，系统应该在变换过程中保留像循环结构这种控制流信息。例如，这将使自定义加速器的编译器能够重用系统定义的一些更高级别的结构和抽象，以及特定于加速器的原语标量&#x2F;向量指令。</li>
+<li>IR validation。开摆。</li>
+<li>Declarative rewrite patterns。开摆。</li>
+</ol>
+<h3 id="IR设计详情"><a href="#IR设计详情" class="headerlink" title="IR设计详情"></a>IR设计详情</h3><p>基于SSA的IR数据结构。</p>
+<ul>
+<li>Operations。MLIR中语义的基本单元是Op。在MLIR中指令、函数、module都被建模成Op。MLIR中没有固定的Op集合，它允许或者说鼓励用户定义拓展（编译器pass保守的对待未知Op）。Op是MLIR中的主要实体，Op包含一系列的regions，regions包含一系列的blcok，block包含一系列的Op，这是一个递归的结构。每个Op都有独一无二的Opcode，是用于标识其方言和操作的字符串。Op以SSA的形式获取0个或多个输入，产生0个或多个输出。所有值都有类型。除了Opcode、操作数、结果外，Op还有属性（Attributes），Regions，Block Arguments，Location information。在可视化的IR表示中，Op是用引号包起来的字符串，value是%开头的标识符，:指定一个数据包中数据的个数，#代表特定值。</li>
+<li>Attributes属性。属性是像常量、字符串这些的结构化的编译期静态信息。属性有类型，每一个Op都有一个字典存属性，key是字符串形式的属性名，value是属性值。在可视化的IR表示中，属性在Op和类型之间，并用花括号括起来。()-&gt;(0)代表了一个放射函数，这个函数产生一个常量0。和Op一样，MLIR中的属性也不是固定的一个集合，也是可以自定义扩展的，可以引用外部数据结构。</li>
+<li>Location information位置信息。MLIR为定位信息提供了一个紧凑的表达方式，并且MLIR希望这个信息能够在整个系统中传播使用。它可以用来保留源程序堆栈跟踪，产生可以生成调试信息的Op。位置信息也是可扩展的，允许编译器引用现有的位置跟踪系统、高级 AST 节点、LLVM 样式的文件行列地址、DWARF 调试信息或高质量实现所需的任何其他信息。</li>
+<li>Regions和Blocks。一个Op可能有一系列的regions。regions为嵌套结构提供了一个机制：region包含block，block包含Op，Op包含region，这就递归起来了。和属性一样，region的语义取决于它从属的Op，region内的Block形成控制流图。每个region的body都是一系列的block，每一个block都有一个终止Op，终止Op可能有后继block，终止Op后控制流转交给后继block。不同控制结构有不同的终止Op。<br>MLIR中没有phi节点了，它使用SSA的函数形式，终止Op将值传进后继block的block arguements。每一个block都有一系列有类型的block arguements。终止Op的语义定义了应该给后继块传什么参。对于一个region内的入口block，它的参数由region的封闭Op的语义定义</li>
+<li>Value dominance and visibility值作用域和可见性。使用前先定义，作用域的概念和以往的认知没什么不同，就不仔细了解了。</li>
+<li>Symbols and symbol tables符号和符号表。符号表从属于Op，表里是字符串形式的符号，其含义由Op定义。</li>
+<li>Dialects方言。MLIR使用方言实现可拓展性，方言在一个唯一的命名空间里提供一组Op、属性和类型。方言可以包含硬件向量上的一些Op和类型，也可以包含代数向量的Op和类型。不同的方言中间是否使用相同的向量类型以及这种类型属于哪里，是留给MLIR用户的设计决策。</li>
+<li>Type system类型系统。MLIR中的所有value都有类型，可在Op产生值时指定类型也可在block arguments中指定。类型为IR提供编译期的语义。MLIR中的类型系统是用户可拓展的。</li>
+<li>Standard types标准类型。此外，MLIR提供了一组标准化的常用类型，包括任意精度整数、标准浮点类型和简单的通用容器——元组、多维向量和张量。这些类型只是对方言作者有用的便利，但并不需要使用。</li>
+<li>Functions and module函数和模块。与传统的IR类似，MLIR通常被组织为为函数和模块。但在MLIR中他们也可以是一个Op。</li>
+</ul>
+<h3 id="IR-infra"><a href="#IR-infra" class="headerlink" title="IR infra"></a>IR infra</h3><p>除了IR本身，MLIR还提供了定义IR元素的基础设施，如方言、操作、模式重写、验证和可重用pass。</p>
+<ul>
+<li>MLIR使用基于TableGen的规范定义Op（ODS）。相当于提供了一个DSL，用户使用这个DSL描述自定义Op，这个定于最终会被翻译成c++代码，与系统的其余部分互操作。</li>
+<li>声明式重写。MLIR提供了一个图重写框架，并辅以声明性重写规则（DRR）系统，使表达模式变得简单。DRR也是一种DSL，也会被转换成c++代码。。。。</li>
+<li>Pass manager。MLIR的pass可以在不同粒度的IR上使用。。。。</li>
+<li>Round-trippable textual IR form。IR和Op在MLIR中都有文本表达形式。MLIR允许自定义IR的打印和解析。。。</li>
+<li>Documentation。ODS描述的东西还会生成文档。。。。</li>
+<li>Verifiers。开摆。。。。</li>
+</ul>
+<h3 id="MLIR的一些应用"><a href="#MLIR的一些应用" class="headerlink" title="MLIR的一些应用"></a>MLIR的一些应用</h3><p>工业界学术界对MLIR是一片好评，并且有很多实际应用的例子。</p>
+<ul>
+<li>TensorFlow graphs。这是一个使用MLIR来支持机器学习框架开发的例子，机器学习框架的中间表示通常是有动态执行语义的数据流图形式。tf的中间表示是一个高级的数据流计算图，图上节点是各个硬件设备上的计算。MLIR在Tensorflow中用于建模中间表示并执行一些变换：比如从简单的代数优化（？？？）到将图重定向至数据中心加速器上的并行执行，从 降级到可部署到移动设备上的代码 到 生成使用类似XLA这种工具的高效代码。</li>
+<li>多面体代码生成。MLIR的最初动机之一是探索加速器的多面体代码生成。仿射方言是一种简化的多面体表示，旨在实现渐进式降级。（有点抽象，开摆。。。）</li>
+<li>FortranIR。在MLIR出现之前，fortran自己定义了一套在LLVM IR之上的IR，用来对Fortran代码在IR级做一些优化变换。有了MLIR之后，可以使用MLIR提供的一些基建来自定义Op，自定义优化变换pass。这些高级优化——高级循环优化、数组复制消除、调用专门化、去虚拟化——仅使用LLVM很难实现。</li>
+<li>领域特定编译器。MLIR提供的一些基建大大简化了开发领域特定编译器的工作流，效果很好，点个赞。</li>
+</ul>
+<h3 id="Consequences-of-the-MLIR-Design"><a href="#Consequences-of-the-MLIR-Design" class="headerlink" title="Consequences of the MLIR Design"></a>Consequences of the MLIR Design</h3><p>_ (:3 」∠)_</p>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>论文最后认为MLIR在ML和HPC领域都大有可为。MLIR官网还有很多很好的文档和教程，有缘再见吧，我只是想水一个矩阵乘法代码生成器。。。。</p>
+<h2 id="如何使用MLIR生成一个单线程高性能矩阵乘法"><a href="#如何使用MLIR生成一个单线程高性能矩阵乘法" class="headerlink" title="如何使用MLIR生成一个单线程高性能矩阵乘法"></a>如何使用MLIR生成一个单线程高性能矩阵乘法</h2><p>文章链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2003.00532%EF%BC%8C%E4%BD%9C%E8%80%85%E6%98%AFUday%EF%BC%8CPLUTO%E4%BD%9C%E8%80%85">https://arxiv.org/abs/2003.00532，作者是Uday，PLUTO作者</a><br>文章以使用MLIR生成高性能矩阵乘法为例，讲述了MLIR生成的高性能程序和手写代码有一定竞争力。<br>作者认为，通过将程序在IR级别自动分析、自动应用一些变换可以避免手写高性能代码。<br>这篇文章的内容是面向编译器，使用MLIR应用手写库中使用到的HPC技术。</p>
+<h3 id="环境介绍"><a href="#环境介绍" class="headerlink" title="环境介绍"></a>环境介绍</h3><p>单核理论峰值75.2GFLOPS(超频至4.7GHz)的Intel Core i7-8700K，私有L1dcache 32KiB，私有L2 cache 256KiB，共享L3 cache 12MiB。</p>
+<h3 id="baseline"><a href="#baseline" class="headerlink" title="baseline"></a>baseline</h3><p>2088x2048x2088 的dgemm</p>
+<table>
+<thead>
+<tr>
+<th>实现方式</th>
+<th>性能(GFLOPS)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>三重循环clang -O3</td>
+<td>0.47</td>
+</tr>
+<tr>
+<td>三重循环gcc -O3</td>
+<td>4.53</td>
+</tr>
+<tr>
+<td>多面体编译技术PLUTO</td>
+<td>19.32</td>
+</tr>
+<tr>
+<td>blis</td>
+<td>63.29</td>
+</tr>
+<tr>
+<td>openblas</td>
+<td>67.49</td>
+</tr>
+<tr>
+<td>mkl</td>
+<td>67.70</td>
+</tr>
+</tbody></table>
+<h3 id="使用MLIR优化GEMM"><a href="#使用MLIR优化GEMM" class="headerlink" title="使用MLIR优化GEMM"></a>使用MLIR优化GEMM</h3><p>作者写这篇文章的时候还没有可生成MLIR的前端高级语言，所以选择了直接写MLIR，用mlir-cpu-runner工具jit 编译然后运行。在这个过程中优化后的MLIR会被lower到LLVM IR，然后生成目标代码。下图是MLIR形式的三重循环GEMM代码（？？？不是2088吗，怎么到这里成2048了）：</p>
+<p><img src="/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/MLIR-GEMM-native.png"></p>
+<p>代码里使用了两种方言Affine和linalg，Op是干啥的见名知意。MLIR里的memref是张量数据在内存中的表示。根据其数据布局，它可能指向底层缓冲区的一个潜在的非连续的子区域。代码片段里的所有memref都是行主序的，map格式为((d0, d1) -&gt; (d0, d1))。memref&lt;2048x2048xf64&gt;代表这是一个数据类型是fp64，shape是2048x2048的张量。仿射layout映射，是指将逻辑坐标映射到物理内存空间的方式。<br>MLIR可以方便的自定义Op，下面这行代码自定义了一个矩阵乘法Op</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hop.matmul %A, %B, %C &#123;some_attr = <span class="number">96</span>, another_attr = <span class="number">4</span>&#125;</span><br><span class="line"> : (memref&lt;<span class="number">2088</span>x2048xf64&gt;, memref&lt;<span class="number">2048</span>x2048xf64&gt;, memref&lt;<span class="number">2088</span>x2048xf64&gt;)</span><br></pre></td></tr></table></figure>
+<p>作者定义了一个-hopt pass，将hop.matmul扩展成三重循环的IR。性能0.558GFLOPS。<br>接着作者用多面体调度的形式描述了gotoblas&#x2F;blis中经典的分块算法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(i, j, k) -&gt; (j/NC, k/KC, i/MC, j/NR, i/MR, k mod KC, j mod NR, i mod MR)</span><br></pre></td></tr></table></figure>
+<p>上述调度的最里面两重循环会被展开成MRxNR的循环体。MR，NR，KC，MC，NC是根据寄存器数量和各级cache大小选取的。<br>想在MLIR中实现上述tile算法，有两种方式，一种是在MLIR中可以通过调用mlir::tile pass来实现对循环的tile，然后使用mlir::interchangeLoops pass来交换循环顺序，另一种是基于特定领域和调度，通过实现一个高级多面体（HOP）方法来实现。在这里作者使用了后面这个方法，原因是MLIR现有的仿射分析机制不够完善，没有做必要的简化，有可能生成冗余的代码。HOP方法依赖于ISL外部库（一个多面体编译工具）。作者将tile调度表达为MLIR的仿射，使用ISL进行代码生成，然后将ISL AST翻译回MLIR，hop.matmul Op需要增加分块参数的属性（由于测试规模不大，作者这里忽略了L3cache的分块参数NC）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hop.matmul %A, %B, %C &#123; M_C = <span class="number">64</span> : i32, K_C = <span class="number">256</span> : i32, M_R = <span class="number">4</span> : i32, N_R = <span class="number">8</span> : i32&#125;</span><br><span class="line"> : (memref&lt;<span class="number">2088</span>x2048xf64&gt;, memref&lt;<span class="number">2048</span>x2048xf64&gt;, memref&lt;<span class="number">2048</span>x2048xf64&gt;)</span><br></pre></td></tr></table></figure>
+<p>tile方式通过仿射调度的形式指定：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Scheule 将矩阵乘原始的三个维度映射到了tile后的7个维度</span></span><br><span class="line">hop.matmul %A, %B, %C &#123;</span><br><span class="line"> schedule = (d0, d1, d2)-&gt; (d2 floordiv <span class="number">256</span>, d0 floordiv <span class="number">64</span>, d1 floordiv <span class="number">8</span>, d0 floordiv <span class="number">4</span>, d2, d1, d0)</span><br><span class="line"> &#125; : (memref&lt;<span class="number">2088</span>x2048xf64&gt;, memref&lt;<span class="number">2048</span>x2048xf64&gt;, memref&lt;<span class="number">2088</span>x2048xf64&gt;)</span><br></pre></td></tr></table></figure>
+<p>作者为了只评估tile后对cache访问的优化，所以暂时忽略了寄存器级的分块</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hop.matmul %A, %B, %C &#123;</span><br><span class="line"> schedule = (d0, d1, d2)-&gt; (d2 floordiv <span class="number">256</span>, d0 floordiv <span class="number">64</span>, d1, d0, d2)</span><br><span class="line"> &#125; : (memref&lt;<span class="number">2088</span>x2048xf64&gt;, memref&lt;<span class="number">2048</span>x2048xf64&gt;, memref&lt;<span class="number">2088</span>x2048xf64&gt;)</span><br></pre></td></tr></table></figure>
+<p>生成的可视化MLIR如下：<br><img src="/2024/06/22/AI%E7%BC%96%E8%AF%91%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94/MLIR-gemm-tiledv1.png"><br>性能只有1.6012GFLOPS。<br>MLIR中提供-affine-data-copy-generate pass和mlir::affineDataCopyGenerate工具，自动生成将张量显式copy&#x2F;pack的代码，可以直接用。作者这里选择新增使用mlir::affineDataCopyGenerate工具的pass -hopt-copy，后续还有循环展开，标量代替，向量化步骤，通过-hopt*系列选项来启用pass，这些pass好像都是作者另写的？最终在下面这条命令下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mlir-opt-hopt-hopt-vect-hopt-copy-hopt-unroll-hopt-scalrep-convert-linalg-to-loops-lower-affine-convert-std-to-llvm dgemm.mlir | mlir-cpu-runner-O3-e main-reps=5-entry-point-result=void-shared-libs=lib/libmlir_runner_utils.so</span><br></pre></td></tr></table></figure>
+<p>生成了最终版的MLIR（太长不贴），并达到了49.8336 GFLOPS的性能。调优分块参数之后，性能可达61.939GFLOPS。通过-hopt-blis pass将最里面三重循环替换成blis的手写6x8 kernel后，性能也只有61.421GFLOPS。<br>总之，有了MLIR之后，手写的各种优化技术都可以变成在IR上操作的一些pass，pass是可以重用的。pass写好之后，对于矩阵乘法来说，只需要给op传不同参数即可生成有上述所有优化技术的代码，例如下面这个可以直接生成高性能sgemm，128.89GFLOPS，最快的MKL也才130.92GFLOPS。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hop.matmul %A, %B, %C &#123;</span><br><span class="line"> M_C = <span class="number">348</span> : i32, K_C = <span class="number">512</span> : i32, M_R = <span class="number">3</span>, N_R = <span class="number">32</span> : i32, K_U = <span class="number">4</span> : i32</span><br><span class="line"> &#125; : (memref&lt;<span class="number">2088</span>x2048xf32&gt;, memref&lt;<span class="number">2048</span>x2048xf32&gt;, memref&lt;<span class="number">2088</span>x2048xf32&gt;)</span><br></pre></td></tr></table></figure>
+
     </div>
 
     
